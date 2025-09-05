@@ -1,6 +1,7 @@
 import { ApiRouteConfig, Handlers } from 'motia'
 import { z } from 'zod'
 import { verifyWebhookSignature } from '../utils/verify-webhook-signature'
+import { checkUserProfile } from '../utils/check-user-profile'
 
 export const config: ApiRouteConfig = {
   type: 'api',
@@ -21,6 +22,8 @@ export const config: ApiRouteConfig = {
       login: z.string(),
       name: z.string(),
       avatar_url: z.string().optional(),
+      html_url: z.string(),
+      url: z.string({ description: 'API URL' }),
     }),
   }),
   responseSchema: {
@@ -94,6 +97,14 @@ export const handler: Handlers['GitHubStarWebhook'] = async (req, { logger, stre
       organization: req.body.repository.owner.login,
     }
 
+    const sender = {
+      name: req.body.sender.name,
+      login: req.body.sender.login,
+      avatarUrl: req.body.sender.avatar_url,
+      url: req.body.sender.html_url,
+      apiUrl: req.body.sender.url,
+    }
+
     const webhookData = {
       fullName: repository.fullName,
       name: repository.name,
@@ -104,10 +115,17 @@ export const handler: Handlers['GitHubStarWebhook'] = async (req, { logger, stre
 
     await streams.stars.set(repository.organization, repository.name, webhookData)
 
-    logger.info('GitHub star webhook processed successfully', {
-      ...webhookData,
-      sender: req.body.sender,
-    })
+    logger.info('GitHub star webhook processed successfully', { ...webhookData, sender })
+
+    if (sender.apiUrl) {
+      try {
+        logger.info('Getting GitHub user profile', { apiUrl: sender.apiUrl })
+        const userProfile = await checkUserProfile(sender.apiUrl)
+        logger.info('GitHub user profile', { userProfile })
+      } catch (error: any) {
+        logger.error('Failed to get GitHub user profile', { error: error.message })
+      }
+    }
 
     return {
       status: 200,

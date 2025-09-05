@@ -62,6 +62,6 @@ jobs:
           npx motia cloud deploy \
             --api-key ${{ secrets.MOTIA_API_KEY }} \
             --environment-id ${{ env.MOTIA_ENV_ID }} \
-            --version-name ${{ env.VERSION_NAME }} \
-            --version-description ${{ env.VERSION_DESCRIPTION }} \
+            --version-name "${{ env.VERSION_NAME }}" \
+            --version-description "${{ env.VERSION_DESCRIPTION }}" \
             --env-file .env

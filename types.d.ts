@@ -12,6 +12,6 @@ declare module 'motia' {
   }
 
   interface Handlers {
-    'GitHubStarWebhook': ApiRouteHandler<{ action: 'created' | 'deleted'; starred_at?: string; repository: { name: string; full_name: string; stargazers_count: number; owner: { login: string } }; sender: { login: string; name: string; avatar_url?: string } }, ApiResponse<200, { message: string; event: string; processed: boolean }> | ApiResponse<400, { error: string }> | ApiResponse<401, { error: string }> | ApiResponse<500, { error: string }>, never>
+    'GitHubStarWebhook': ApiRouteHandler<{ action: 'created' | 'deleted'; starred_at?: string; repository: { name: string; full_name: string; stargazers_count: number; owner: { login: string } }; sender: { login: string; name: string; avatar_url?: string; html_url: string; url: string } }, ApiResponse<200, { message: string; event: string; processed: boolean }> | ApiResponse<400, { error: string }> | ApiResponse<401, { error: string }> | ApiResponse<500, { error: string }>, never>
   }
 }
