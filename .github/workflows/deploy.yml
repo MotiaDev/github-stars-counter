@@ -36,7 +36,7 @@ jobs:
       # Secret for GitHub webhook
       - name: Create Env file
         run: |
-          echo "GITHUB_WEBHOOK_SECRET=${{ secrets.GITHUB_WEBHOOK_SECRET }}" > .env
+          echo "GITHUB_WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }}" > .env
 
       - name: Deploy using Motia Cloud
         run: |
