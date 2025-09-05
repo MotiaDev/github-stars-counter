@@ -4,6 +4,14 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      versionName:
+        description: 'Version Name to deploy'
+        required: true
+      versionDescription:
+        description: 'Version Description to deploy'
+        required: true
 
 env:
   MOTIA_ENV_ID: 39f1b8d1-27f7-45dd-a676-ecb702129200
@@ -17,6 +25,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.release.tag_name || github.ref }}
+
+      - name: Set VERSION_NAME and DESCRIPTION
+        id: meta
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "VERSION_NAME=${{ github.event.inputs.versionName }}" >> $GITHUB_ENV
+            echo "VERSION_DESCRIPTION=${{ github.event.inputs.versionDescription }}" >> $GITHUB_ENV
+          else
+            echo "VERSION_NAME=${GITHUB_SHA::7}" >> $GITHUB_ENV
+            echo "VERSION_DESCRIPTION=${{ github.event.head_commit.message }}" >> $GITHUB_ENV
+          fi
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -43,6 +62,6 @@ jobs:
           npx motia cloud deploy \
             --api-key ${{ secrets.MOTIA_API_KEY }} \
             --environment-id ${{ env.MOTIA_ENV_ID }} \
-            --version-name ${GITHUB_SHA::7} \
-            --version-description "${{ github.event.head_commit.message }}" \
+            --version-name ${{ env.VERSION_NAME }} \
+            --version-description ${{ env.VERSION_DESCRIPTION }} \
             --env-file .env
