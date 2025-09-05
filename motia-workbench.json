@@ -1,0 +1,11 @@
+[
+  {
+    "id": "github-star-processing",
+    "config": {
+      "steps/01-github-webhook.step.ts": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  }
+]

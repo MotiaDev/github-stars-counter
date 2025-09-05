@@ -1,0 +1,47 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  MOTIA_ENV_ID: 39f1b8d1-27f7-45dd-a676-ecb702129200
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || github.ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create Env file
+        run: |
+          echo "GITHUB_WEBHOOK_SECRET=${{ secrets.GITHUB_WEBHOOK_SECRET }}" > .env
+
+      - name: Deploy using Motia Cloud
+        run: |
+          npx motia cloud deploy \
+            --api-key ${{ secrets.MOTIA_API_KEY }} \
+            --environment-id ${{ env.MOTIA_ENV_ID }} \
+            --version-name ${GITHUB_SHA::7} \
+            --version-description "${{ github.event.head_commit.message }}" \
+            --env-file .env
