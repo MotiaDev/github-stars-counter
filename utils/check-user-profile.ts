@@ -41,6 +41,7 @@ export interface GitHubUserProfileResponse {
   htmlUrl: string
   name: string | null
   login: string
+  location: string | null
 }
 
 export const checkUserProfile = async (apiUrl: string): Promise<GitHubUserProfileResponse> => {
@@ -54,5 +55,6 @@ export const checkUserProfile = async (apiUrl: string): Promise<GitHubUserProfil
     htmlUrl: data.html_url,
     name: data.name,
     login: data.login,
+    location: data.location,
   }
 }

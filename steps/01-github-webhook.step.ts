@@ -40,7 +40,10 @@ export const config: ApiRouteConfig = {
   flows: ['github-star-processing'],
 }
 
-export const handler: Handlers['GitHubStarWebhook'] = async (req, { logger, streams }) => {
+export const handler: Handlers['GitHubStarWebhook'] = async (
+  req,
+  { logger, streams, state, traceId }
+) => {
   try {
     // Extract GitHub headers
     const githubEvent = req.headers['x-github-event'] as string
@@ -121,6 +124,9 @@ export const handler: Handlers['GitHubStarWebhook'] = async (req, { logger, stre
       try {
         logger.info('Getting GitHub user profile', { apiUrl: sender.apiUrl })
         const userProfile = await checkUserProfile(sender.apiUrl)
+
+        await state.set(repository.fullName, traceId, userProfile)
+
         logger.info('GitHub user profile', { userProfile })
       } catch (error: any) {
         logger.error('Failed to get GitHub user profile', { error: error.message })
