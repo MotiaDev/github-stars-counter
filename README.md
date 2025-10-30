@@ -3,6 +3,7 @@
 ![Live Stars Counter](./public/motia-star.gif)
 
 A **real-time GitHub stars counter** built with [Motia](https://motia.dev) - showcasing how incredibly simple it is to build production-ready, real-time applications with just a few lines of code.
+![workbench](./public/workbench.png)
 
 🎯 **Live in Action:** This exact counter powers the live star count on the [Motia website](https://motia.dev) - updating in real-time as developers star the repository!
 
